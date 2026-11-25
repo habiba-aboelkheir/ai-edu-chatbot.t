@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Tutor | مساعد التعليم الذكي</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap"
+    rel="stylesheet"
+  />
+  <link
+    rel="stylesheet"
+    href="{{ url_for('static', filename='style.css') }}"
+  />
+</head>
+<body class="dark-theme">
+  <div class="app-shell">
+    <!-- الشريط العلوي -->
+    <header class="topbar">
+      <div class="brand-group">
+        <div class="brand-logo">AI</div>
+        <div>
+          <div class="brand-title-row">
+            <h1 class="brand-title">AI Tutor</h1>
+            <span class="badge">Pro</span>
+          </div>
+          <p class="brand-subtitle">مساعد التعليم الذكي للمحاضرات والاختبارات</p>
+        </div>
+      </div>
+
+      <nav class="top-nav" aria-label="التنقل الرئيسي">
+        <a href="#pdf-card" class="nav-link active">المحاضرة</a>
+        <a href="#quiz-card" class="nav-link">الاختبار</a>
+        <a href="#chat-card" class="nav-link">المدرس الذكي</a>
+      </nav>
+
+      <div class="header-actions">
+        <button type="button" id="langToggle" class="ghost-btn" title="تبديل اللغة">
+          EN / عربي
+        </button>
+      </div>
+    </header>
+
+    <!-- شبكة البطاقات الثلاث الرئيسية -->
+    <main class="dashboard-grid">
+      <!-- البطاقة الأولى: رفع ملف المحاضرة PDF -->
+      <section id="pdf-card" class="card">
+        <div class="card-header">
+          <span class="step-pill">01</span>
+          <div>
+            <h2>رفع ملف المحاضرة (PDF)</h2>
+            <p class="card-desc">
+              ارفع ملف المحاضرة ليقوم المساعد بفهرسته والإجابة بدقة من محتواه.
+            </p>
+          </div>
+        </div>
+
+        <label for="pdfInput" id="dropZone" class="upload-dropzone">
+          <input
+            type="file"
+            id="pdfInput"
+            name="file"
+            accept="application/pdf,.pdf"
+            hidden
+          />
+          <div class="upload-icon" aria-hidden="true">📄</div>
+          <span id="fileNameLabel" class="upload-title">
+            اختر ملف PDF أو اسحبه هنا
+          </span>
+          <span class="upload-hint">يدعم ملفات PDF الدراسية</span>
+        </label>
+
+        <button type="button" id="uploadPdfBtn" class="btn btn-primary full-width">
+          <span id="uploadPdfText">رفع وفهرسة الملف</span>
+        </button>
+
+        <div id="uploadStatus" class="status-box" role="status" aria-live="polite"></div>
+      </section>
+
+      <!-- البطاقة الثانية: توليد اختبار قصير Quiz -->
+      <section id="quiz-card" class="card">
+        <div class="card-header">
+          <span class="step-pill">02</span>
+          <div>
+            <h2>توليد اختبار قصير (Quiz)</h2>
+            <p class="card-desc">
+              اختبر فهمك للمحاضرة بأسئلة ذكية مع تصحيح فوري وتوضيح للإجابات.
+            </p>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="label-row">
+            <label for="numQuestions">عدد الأسئلة</label>
+            <span id="numQuestionsValue" class="value-chip">5</span>
+          </div>
+          <input
+            type="range"
+            id="numQuestions"
+            name="num_questions"
+            min="1"
+            max="15"
+            value="5"
+            class="range-input"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="difficultySelect">مستوى الصعوبة</label>
+          <select id="difficultySelect" name="difficulty" class="select-input">
+            <option value="easy">سهل (Easy)</option>
+            <option value="medium" selected>متوسط (Medium)</option>
+            <option value="hard">متقدم (Hard)</option>
+          </select>
+        </div>
+
+        <button
+          type="button"
+          id="generateQuizBtn"
+          class="btn btn-accent full-width"
+        >
+          <span id="generateQuizText">ابدأ الاختبار الآن</span>
+        </button>
+
+        <div id="quizContainer" class="quiz-container" aria-live="polite"></div>
+      </section>
+
+      <!-- البطاقة الثالثة: اسأل المدرس الذكي -->
+      <section id="chat-card" class="card chat-card">
+        <div class="card-header">
+          <span class="step-pill">03</span>
+          <div>
+            <h2>اسأل المدرس الذكي</h2>
+            <p class="card-desc">
+              اسأل عن أي نقطة في المحاضرة لتبسيط المفاهيم أو حل التمارين.
+            </p>
+          </div>
+        </div>
+
+        <div id="chatMessages" class="chat-messages" aria-live="polite">
+          <div class="message bot-message">
+            <div class="message-sender">المدرس الذكي</div>
+            <div class="message-bubble">
+              أهلاً بك! ارفع ملف المحاضرة أولاً ثم اسألني أي سؤال لتبسيط المفاهيم أو حل التمارين.
+            </div>
+          </div>
+        </div>
+
+        <form id="chatForm" class="chat-form">
+          <input
+            type="text"
+            id="chatInput"
+            class="chat-input"
+            placeholder="اكتب سؤالك هنا..."
+            autocomplete="off"
+            required
+          />
+          <button type="submit" id="sendChatBtn" class="btn btn-primary">
+            <span id="sendChatText">إرسال</span>
+          </button>
+        </form>
+      </section>
+    </main>
+  </div>
+
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
